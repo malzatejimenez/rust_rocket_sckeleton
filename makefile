@@ -18,3 +18,8 @@ diesel-revert:
 cargo-add:
 	cargo add diesel --features postgres
 	cargo add chrono
+
+# se corre la aplicacion asignando al variable de entorno de la base de datos
+cargo-run:
+	DATABASE_URL=postgres://postgres:postgres@localhost/app_db cargo run
+

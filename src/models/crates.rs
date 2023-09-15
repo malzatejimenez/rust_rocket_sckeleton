@@ -1,7 +1,8 @@
 use crate::schema::crates;
 use chrono::NaiveDateTime;
-use diesel::Insertable;
+use diesel::{Insertable, Queryable};
 
+#[derive(Queryable)]
 pub struct Crate {
     pub id: i32,
     pub rustacean_id: i32,

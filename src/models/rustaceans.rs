@@ -1,7 +1,8 @@
 use crate::schema::rustaceans;
 use chrono::NaiveDateTime;
-use diesel::Insertable;
+use diesel::{query_builder::AsChangeset, Insertable, Queryable};
 
+#[derive(Queryable, AsChangeset)]
 pub struct Rustacean {
     pub id: i32,
     pub name: String,
