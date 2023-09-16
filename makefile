@@ -27,6 +27,7 @@ cargo-add:
 	cargo add diesel --features postgres
 	cargo add chrono --features serde
 	cargo add serde --features derive
+	cargo add --dev reqwest --features json,blocking 
 
 # se corre la aplicacion asignando al variable de entorno de la base de datos
 cargo-run:
@@ -42,11 +43,11 @@ get-rustaceans:
 
 # probar la ruta para obtener un rustacean específico
 find-rustacean:
-	curl 127.0.0.1:8000/rustaceans/1 -H 'Content-Type: application/json'
+	curl 127.0.0.1:8000/rustaceans/9 -H 'Content-Type: application/json'
 
 # probar la ruta para editar un rustacean específico
 update-rustacean:
-	curl 127.0.0.1:8000/rustaceans/1 -d '{"created_at":"2023-09-16T16:10:53.705456","email":"johnie@doe.com","id":1,"name":"Johnie Doe"}' -X PUT -H 'Content-Type: application/json'
+	curl 127.0.0.1:8000/rustaceans/9 -d '{"created_at":"2023-09-16T16:10:53.705456","email":"johnie@doe.com","id":1,"name":"Johnie Doe"}' -X PUT -H 'Content-Type: application/json'
 
 # probar la ruta para eliminar un rustacean específico
 delete-rustacean:
