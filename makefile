@@ -27,6 +27,7 @@ cargo-add:
 	cargo add diesel --features postgres
 	cargo add chrono --features serde
 	cargo add serde --features derive
+	cargo add serde_json
 	cargo add --dev reqwest --features json,blocking 
 
 # se corre la aplicacion asignando al variable de entorno de la base de datos

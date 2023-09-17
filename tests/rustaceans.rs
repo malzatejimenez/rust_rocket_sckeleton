@@ -1,42 +1,9 @@
 use reqwest::{blocking::Client, StatusCode}; // Importa las bibliotecas necesarias
-use rocket::serde::json::{serde_json::json, Value}; // Importa las bibliotecas necesarias de Rocket
+use serde_json::{json, Value}; // Importa las bibliotecas necesarias de Rocket
 
-// Función para crear un Rustacean utilizando un cliente HTTP
-fn create_test_rustacean(client: &Client) -> Value {
-    // Crea un objeto JSON que representa un Rustacean con nombre y correo electrónico
-    let rustacean = json!({
-        "name": "Foo bar",
-        "email": "foo@bar.com",
-    });
+pub mod common;
 
-    // Realiza una solicitud POST al servidor local de Rocket para crear el Rustacean
-    let response = client
-        .post("http://127.0.0.1:8000/rustaceans") // URL de la API
-        .json(&rustacean) // Envía el objeto JSON en la solicitud
-        .send() // Envía la solicitud y obtiene la respuesta
-        .unwrap(); // Maneja cualquier error que pueda ocurrir
-
-    // Verifica que la respuesta tenga un código de estado HTTP 201 (CREATED)
-    assert_eq!(response.status(), StatusCode::CREATED);
-
-    // Deserializa la respuesta JSON y la devuelve como un objeto Value
-    response.json().unwrap()
-}
-
-// funcion para elminar un rustacean utilizando un cliente HTTP
-fn delete_test_rustacean(client: &Client, rustacean: Value) {
-    // Enviar una solicitud DELETE para eliminar el Rustacean creado
-    let response = client
-        .delete(format!(
-            "http://127.0.0.1:8000/rustaceans/{}",
-            rustacean["id"] // Utilizar el "id" del Rustacean creado en la URL
-        ))
-        .send()
-        .unwrap();
-
-    // Validar que el código de estado de la respuesta sea NO CONTENT (204)
-    assert_eq!(response.status(), StatusCode::NO_CONTENT);
-}
+use common::{create_test_rustacean, delete_test_rustacean, APP_HOST};
 
 #[test]
 fn test_get_rustaceans() {
@@ -52,7 +19,7 @@ fn test_get_rustaceans() {
 
     // Enviar una solicitud GET para obtener la lista de Rustaceans desde la API
     let response = client
-        .get("http://127.0.0.1:8000/rustaceans") // URL de la API para obtener Rustaceans
+        .get(format!("{}/rustaceans", APP_HOST)) // URL de la API para obtener Rustaceans
         .send() // Enviar la solicitud y obtener la respuesta
         .unwrap(); // Manejar cualquier error que pueda ocurrir
 
@@ -86,7 +53,7 @@ fn test_create_rustacean() {
 
     // Realiza una solicitud POST al servidor local de Rocket para crear el Rustacean
     let response = client
-        .post("http://127.0.0.1:8000/rustaceans") // URL de la API
+        .post(format!("{}/rustaceans", APP_HOST)) // URL de la API
         .json(&rustacean) // Envía el objeto JSON en la solicitud
         .send() // Envía la solicitud y obtiene la respuesta
         .unwrap(); // Maneja cualquier error que pueda ocurrir
@@ -123,8 +90,8 @@ fn test_view_rustacean() {
     // consultando el rustacean creado
     let response = client
         .get(format!(
-            "http://127.0.0.1:8000/rustaceans/{}",
-            rustacean_created["id"]
+            "{}/rustaceans/{}",
+            APP_HOST, rustacean_created["id"]
         ))
         .send()
         .unwrap();
@@ -165,7 +132,8 @@ fn test_update_rustacean() {
     // Enviar una solicitud PUT para actualizar el Rustacean creado
     let response = client
         .put(format!(
-            "http://127.0.0.1:8000/rustaceans/{}",
+            "{}/rustaceans/{}",
+            APP_HOST,
             rustacean_created["id"] // Utilizar el "id" del Rustacean creado en la URL
         ))
         .json(&rustacean_to_update) // Envía la versión actualizada del Rustacean
@@ -200,7 +168,8 @@ fn test_delete_rustacean() {
     // Enviar una solicitud DELETE para eliminar el Rustacean creado
     let response = client
         .delete(format!(
-            "http://127.0.0.1:8000/rustaceans/{}",
+            "{}/rustaceans/{}",
+            APP_HOST,
             rustacean_created["id"] // Utilizar el "id" del Rustacean creado en la URL
         ))
         .send()
