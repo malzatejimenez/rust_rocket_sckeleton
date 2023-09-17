@@ -29,6 +29,7 @@ cargo-add:
 	cargo add serde --features derive
 	cargo add serde_json
 	cargo add --dev reqwest --features json,blocking 
+	cargo add log
 
 # se corre la aplicacion asignando al variable de entorno de la base de datos
 cargo-run:

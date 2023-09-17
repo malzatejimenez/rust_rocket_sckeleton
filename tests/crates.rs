@@ -161,9 +161,82 @@ fn test_update_crate() {
     // Comparamos el objeto "a_crate" con el payload recibido para asegurarnos de que sean iguales.
     assert_eq!(crate_to_edit, payload);
 
+    // test author-switching
+    let mut crate_edit_author = json!({
+        "id": a_crate["id"],
+        "code": "foozie",
+        "name": "foozie bar",
+        "rustacean_id": 9999,
+        "version": "0.1.1",
+        "description": "foozie bar baz",
+        "created_at": a_crate["created_at"],
+    });
+
+    // Realizamos una solicitud PUT al servidor para tratar de editar el crate asignandole un autor que NO existe
+    let response = client
+        .put(format!("{}/crates/{}", APP_HOST, crate_edit_author["id"]))
+        .json(&crate_edit_author)
+        .send()
+        .unwrap();
+
+    // Verificamos que la respuesta sea un estado de "INTERNAL_SERVER_ERROR" (500).
+    assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+
+    // generando un nuevo rustacean
+    let rustacean2 = create_test_rustacean(&client);
+    crate_edit_author["rustacean_id"] = rustacean2["id"].clone();
+
+    // Realizamos una solicitud PUT al servidor para tratar de editar el crate asignandole un autor que SÍ existe
+    let response = client
+        .put(format!("{}/crates/{}", APP_HOST, crate_edit_author["id"]))
+        .json(&crate_edit_author)
+        .send()
+        .unwrap();
+
+    // Verificamos que la respuesta sea un estado de "OK" (200).
+    assert_eq!(response.status(), StatusCode::OK);
+
+    // test intentando agregar una descripción muy larga
+    let crate_edit_description = json!({
+        "id": a_crate["id"],
+        "code": "foozie",
+        "name": "foozie bar",
+        "rustacean_id": rustacean["id"],
+        "version": "0.1.1",
+        "created_at": a_crate["created_at"],
+        "description": "Al contrario del pensamiento popular, el texto de Lorem Ipsum no es simplemente texto aleatorio.
+        Tiene sus raices en una pieza cl´sica de la literatura del Latin, que data del año 45 antes de Cristo, haciendo 
+        que este adquiera mas de 2000 años de antiguedad. Richard McClintock, un profesor de Latin de la Universidad de 
+        Hampden-Sydney en Virginia, encontró una de las palabras más oscuras de la lengua del latín, consecteur, 
+        en un pasaje de Lorem Ipsum, y al seguir leyendo distintos textos del latín, descubrió la fuente indudable. 
+        Lorem Ipsum viene de las secciones 1.10.32 y 1.10.33 de de Finnibus Bonorum et Malorum (Los Extremos del Bien y El Mal) 
+        por Cicero, escrito en el año 45 antes de Cristo. Este libro es un tratado de teoría de éticas, muy popular durante el Renacimiento. 
+        La primera linea del Lorem Ipsum, Lorem ipsum dolor sit amet.., viene de una linea en la sección 1.10.32
+        El trozo de texto estándar de Lorem Ipsum usado desde el año 1500 es reproducido debajo para aquellos interesados. 
+        Las secciones 1.10.32 y 1.10.33 de de Finibus Bonorum et Malorum por Cicero son también reproducidas en su forma original exacta, 
+        acompañadas por versiones en Inglés de la traducción realizada en 1914 por H. Rackham.",
+    });
+
+    // Realizamos una solicitud PUT al servidor para tratar de editar el crate asignandole una descripción muy larga
+    let response = client
+        .put(format!("{}/crates/{}", APP_HOST, crate_edit_author["id"]))
+        .json(&crate_edit_description)
+        .send()
+        .unwrap();
+
+    // Verificamos que la respuesta sea un estado de "OK" (200)."
+    assert_eq!(response.status(), StatusCode::OK);
+
+    // Extraemos el cuerpo de la respuesta JSON.
+    let payload: Value = response.json().unwrap();
+
+    // Comparamos el objeto "crate_edit_description" con el payload recibido para asegurarnos de que sean iguales.
+    assert_eq!(payload, crate_edit_description);
+
     // CLEANUP -----------------------------
     delete_test_crate(&client, a_crate); // Borramos el crate de prueba
     delete_test_rustacean(&client, rustacean); // Borramos el Rustacean de prueba
+    delete_test_rustacean(&client, rustacean2); // Borramos el Rustacean 2 de prueba
 }
 
 #[test]

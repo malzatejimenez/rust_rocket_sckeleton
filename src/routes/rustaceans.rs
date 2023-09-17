@@ -1,3 +1,4 @@
+use super::server_error;
 use crate::{
     models::rustaceans::{NewRustacean, Rustacean}, // Importa los modelos Rustacean y NewRustacean desde tu proyecto
     repositories::rustaceans::RustaceanRepository, // Importa el repositorio RustaceanRepository
@@ -16,7 +17,7 @@ async fn get_rustaceans(db: DbConn) -> Result<Value, Custom<Value>> {
     db.run(|c| {
         RustaceanRepository::find_multiple(c, 100) // Llama a la función find_multiple del repositorio
             .map(|rustaceans| json!(rustaceans)) // Convierte los resultados en JSON
-            .map_err(|_| Custom(Status::InternalServerError, json!("error"))) // Maneja errores
+            .map_err(|e| server_error(e.into())) // Maneja errores
     })
     .await
 }
@@ -28,7 +29,7 @@ async fn view_rustacean(id: i32, db: DbConn) -> Result<Value, Custom<Value>> {
     db.run(move |c| {
         RustaceanRepository::find(c, id) // Llama a la función find del repositorio
             .map(|rustacean| json!(rustacean)) // Convierte el resultado en JSON
-            .map_err(|_| Custom(Status::InternalServerError, json!("error"))) // Maneja errores
+            .map_err(|e| server_error(e.into())) // Maneja errores
     })
     .await
 }
@@ -45,7 +46,7 @@ async fn create_rustacean(
         RustaceanRepository::create(c, new_rustacean) // Llama a la función create del repositorio
             // Devuelve un código de estado 201 (Created) junto con el Rustacean creado
             .map(|rustacean| Custom(Status::Created, json!(rustacean))) // Convierte el resultado en JSON
-            .map_err(|_| Custom(Status::InternalServerError, json!("error"))) // Maneja errores
+            .map_err(|e| server_error(e.into())) // Maneja errores
     })
     .await
 }
@@ -63,7 +64,7 @@ async fn update_rustacean(
         RustaceanRepository::update(c, id, rustacean) // Llama a la función update del repositorio
             // Devuelve un código de estado 200 (OK) junto con los detalles actualizados
             .map(|rustacean| Custom(Status::Ok, json!(rustacean))) // Convierte el resultado en JSON
-            .map_err(|_| Custom(Status::InternalServerError, json!("error"))) // Maneja errores
+            .map_err(|e| server_error(e.into())) // Maneja errores
     })
     .await
 }
@@ -75,7 +76,7 @@ async fn delete_rustacean(id: i32, db: DbConn) -> Result<NoContent, Custom<Value
     db.run(move |c| {
         RustaceanRepository::delete(c, id) // Llama a la función delete del repositorio
             .map(|_| NoContent) // Devuelve una respuesta sin contenido si la eliminación es exitosa
-            .map_err(|_| Custom(Status::InternalServerError, json!("error"))) // Maneja errores
+            .map_err(|e| server_error(e.into())) // Maneja errores
     })
     .await
 }

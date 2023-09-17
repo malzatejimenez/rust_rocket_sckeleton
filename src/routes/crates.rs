@@ -9,6 +9,8 @@ use rocket::{
     serde::json::{serde_json::json, Json, Value}, // Importa las utilidades para trabajar con JSON
 };
 
+use super::server_error;
+
 // Ruta para obtener todos los Crates
 #[rocket::get("/crates")]
 async fn get_crates(db: DbConn) -> Result<Value, Custom<Value>> {
@@ -16,7 +18,7 @@ async fn get_crates(db: DbConn) -> Result<Value, Custom<Value>> {
     db.run(|c| {
         CrateRepository::find_multiple(c, 100) // Llama a la función find_multiple del repositorio
             .map(|crates| json!(crates)) // Convierte los resultados en JSON
-            .map_err(|_| Custom(Status::InternalServerError, json!("error"))) // Maneja errores
+            .map_err(|e| server_error(e.into())) // Maneja errores
     })
     .await
 }
@@ -28,7 +30,7 @@ async fn view_crate(id: i32, db: DbConn) -> Result<Value, Custom<Value>> {
     db.run(move |c| {
         CrateRepository::find(c, id) // Llama a la función find del repositorio
             .map(|a_crate| json!(a_crate)) // Convierte el resultado en JSON
-            .map_err(|_| Custom(Status::InternalServerError, json!("error"))) // Maneja errores
+            .map_err(|e| server_error(e.into())) // Maneja errores
     })
     .await
 }
@@ -45,7 +47,7 @@ async fn create_crate(
         CrateRepository::create(c, new_crate) // Llama a la función create del repositorio
             // Devuelve un código de estado 201 (Created) junto con el Crate creado
             .map(|a_crate| Custom(Status::Created, json!(a_crate))) // Convierte el resultado en JSON
-            .map_err(|_| Custom(Status::InternalServerError, json!("error"))) // Maneja errores
+            .map_err(|e| server_error(e.into())) // Maneja errores
     })
     .await
 }
@@ -63,7 +65,7 @@ async fn update_crate(
         CrateRepository::update(c, id, a_crate) // Llama a la función update del repositorio
             // Devuelve un código de estado 200 (OK) junto con los detalles actualizados
             .map(|a_crate| Custom(Status::Ok, json!(a_crate))) // Convierte el resultado en JSON
-            .map_err(|_| Custom(Status::InternalServerError, json!("error"))) // Maneja errores
+            .map_err(|e| server_error(e.into())) // Maneja errores
     })
     .await
 }
@@ -75,7 +77,7 @@ async fn delete_crate(id: i32, db: DbConn) -> Result<NoContent, Custom<Value>> {
     db.run(move |c| {
         CrateRepository::delete(c, id) // Llama a la función delete del repositorio
             .map(|_| NoContent) // Devuelve una respuesta sin contenido si la eliminación es exitosa
-            .map_err(|_| Custom(Status::InternalServerError, json!("error"))) // Maneja errores
+            .map_err(|e| server_error(e.into())) // Maneja errores
     })
     .await
 }
