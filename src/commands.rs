@@ -1,7 +1,7 @@
 use crate::{
+    auth::authorize::hash_password,
     models::users::NewUser,
     repositories::{roles::RoleRepository, users::UserRepository},
-    utils::password_hashing::hash_password,
 };
 use diesel::{pg::PgConnection, prelude::*};
 
