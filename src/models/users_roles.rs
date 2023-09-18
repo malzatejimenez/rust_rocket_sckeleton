@@ -1,10 +1,17 @@
-use crate::schema::users_roles;
-use diesel::{Insertable, Queryable};
+use crate::{
+    models::{roles::Role, users::User},
+    schema::users_roles,
+};
+use diesel::{
+    prelude::{Associations, Identifiable},
+    Insertable, Queryable,
+};
 use serde::Deserialize;
 
-#[derive(Queryable)]
+#[derive(Queryable, Associations, Identifiable)]
 #[diesel(belongs_to(Role))]
 #[diesel(belongs_to(User))]
+#[diesel(table_name = users_roles)]
 pub struct UserRole {
     pub id: i32,
     pub user_id: i32,

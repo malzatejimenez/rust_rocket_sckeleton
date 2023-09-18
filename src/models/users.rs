@@ -1,9 +1,9 @@
 use crate::schema::users;
 use chrono::NaiveDateTime;
-use diesel::{Insertable, Queryable};
+use diesel::{prelude::Identifiable, Insertable, Queryable};
 use serde::Deserialize;
 
-#[derive(Queryable)]
+#[derive(Queryable, Debug, Identifiable)]
 pub struct User {
     pub id: i32,
     pub username: String,

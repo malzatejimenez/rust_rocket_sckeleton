@@ -6,6 +6,7 @@ use crate::{
 use rocket::{
     http::Status,
     response::status::{Custom, NoContent},
+    routes,
     serde::json::{serde_json::json, Json, Value}, // Importa las utilidades para trabajar con JSON
 };
 

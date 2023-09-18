@@ -30,6 +30,8 @@ cargo-add:
 	cargo add serde_json
 	cargo add --dev reqwest --features json,blocking 
 	cargo add log
+	cargo add clap
+	cargo add dotenv
 
 # se corre la aplicacion asignando al variable de entorno de la base de datos
 cargo-run:

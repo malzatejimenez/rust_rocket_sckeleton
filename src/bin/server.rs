@@ -1,15 +1,9 @@
-#[macro_use]
-extern crate rocket;
+extern crate cr8s;
 
-mod models;
-mod repositories;
-mod routes;
-mod schema;
-
-use routes::{crates, rustaceans};
-
-#[rocket_sync_db_pools::database("postgres")]
-pub struct DbConn(diesel::PgConnection);
+use cr8s::{
+    routes::{crates, rustaceans},
+    DbConn,
+};
 
 #[rocket::main]
 async fn main() {
