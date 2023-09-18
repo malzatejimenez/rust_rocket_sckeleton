@@ -5,13 +5,39 @@ use crate::{
         users_roles::{NewUserRole, UserRole},
     },
     repositories::roles::RoleRepository,
-    schema::{users::table as users_table, users_roles::table as users_roles_table},
+    schema::{
+        roles::table as roles_table,
+        users::table as users_table,
+        users_roles::{self, table as users_roles_table},
+    },
 };
 use diesel::{prelude::*, PgConnection, QueryResult};
 
 pub struct UserRepository;
 
 impl UserRepository {
+    // Consulta los usuarios de la  base de datos incluyendo sus roles.
+    pub fn find_with_roles(
+        c: &mut PgConnection,
+    ) -> QueryResult<Vec<(User, Vec<(UserRole, Role)>)>> {
+        // Carga todos los registros de la tabla de usuarios (users_table).
+        let users = users_table.load(c)?;
+
+        // Realiza una consulta que combina las tablas 'users_roles_table' y 'roles_table'
+        // mediante una operación de 'inner join'.
+        // Esto podría ser útil si tienes una tabla de relaciones entre usuarios y roles.
+        let result = users_roles_table
+            .inner_join(roles_table)
+            .load::<(UserRole, Role)>(c)?
+            .grouped_by(&users);
+
+        // Combina los resultados cargados de la tabla de usuarios con los resultados
+        // de la consulta de roles, agrupándolos en una estructura de datos que contiene
+        // un vector de usuarios y para cada usuario, un vector de tuplas (UserRole, Role)
+        // que representa las relaciones de roles para ese usuario.
+        Ok(users.into_iter().zip(result).collect())
+    }
+
     pub fn create(
         c: &mut PgConnection,
         new_user: NewUser,
@@ -52,5 +78,16 @@ impl UserRepository {
 
         // Devolver el usuario creado.
         Ok(user)
+    }
+
+    // Método para eliminar un usuario por medio de su id.
+    pub fn delete(c: &mut PgConnection, id: i32) -> QueryResult<usize> {
+        // Elimina registros en la tabla de relación users_roles que tienen el user_id igual a 'id'.
+        // Esta tabla se utiliza para almacenar relaciones entre usuarios y roles.
+        diesel::delete(users_roles_table.filter(users_roles::user_id.eq(id))).execute(c)?;
+
+        // Elimina el registro del usuario en la tabla de usuarios (users_table) utilizando su 'id'.
+        // Esto eliminará completamente al usuario de la base de datos.
+        diesel::delete(users_table.find(id)).execute(c)
     }
 }

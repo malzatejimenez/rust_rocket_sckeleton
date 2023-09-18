@@ -1,6 +1,7 @@
 use crate::{
     models::users::NewUser,
     repositories::{roles::RoleRepository, users::UserRepository},
+    utils::password_hashing::hash_password,
 };
 use diesel::{pg::PgConnection, prelude::*};
 
@@ -15,11 +16,17 @@ fn load_db_connection() -> PgConnection {
 
 // Función para crear un nuevo usuario
 pub fn create_user(username: String, password: String, roles: Vec<String>) -> () {
-    // Crea un nuevo usuario con los datos proporcionados
-    let new_user = NewUser { username, password };
-
     // Carga la conexión a la base de datos
     let mut c = load_db_connection();
+
+    // Se genera el hash del password
+    let password_hash = hash_password(&password).unwrap();
+
+    // Crea un nuevo usuario con los datos proporcionados
+    let new_user = NewUser {
+        username,
+        password: password_hash,
+    };
 
     // Crea el usuario en la base de datos y obtiene el resultado
     let user = UserRepository::create(&mut c, new_user, roles).unwrap();
@@ -36,10 +43,23 @@ pub fn create_user(username: String, password: String, roles: Vec<String>) -> ()
 
 // Función para listar usuarios
 pub fn list_users() -> () {
-    // Implementación pendiente: Debería recuperar y listar usuarios desde la base de datos
+    // Carga la conexión a la base de datos
+    let mut c = load_db_connection();
+
+    // Se obtienen todos los usuarios de la base de datos con sus roles
+    let users = UserRepository::find_with_roles(&mut c).unwrap();
+
+    // Se imprimen los usuarios
+    for user in users {
+        println!("User: {:?}", user);
+    }
 }
 
 // Función para eliminar un usuario por su ID
-pub fn delete_user(_id: i32) -> () {
-    // Implementación pendiente: Debería eliminar un usuario por su ID desde la base de datos
+pub fn delete_user(id: i32) -> () {
+    // Carga la conexión a la base de datos
+    let mut c = load_db_connection();
+
+    // Elimina el usuario
+    UserRepository::delete(&mut c, id).unwrap();
 }

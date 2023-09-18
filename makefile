@@ -32,6 +32,7 @@ cargo-add:
 	cargo add log
 	cargo add clap
 	cargo add dotenv
+	cargo add argon2
 
 # se corre la aplicacion asignando al variable de entorno de la base de datos
 cargo-run:

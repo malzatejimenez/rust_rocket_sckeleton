@@ -8,7 +8,7 @@ use diesel::{
 };
 use serde::Deserialize;
 
-#[derive(Queryable, Associations, Identifiable)]
+#[derive(Queryable, Associations, Identifiable, Debug)]
 #[diesel(belongs_to(Role))]
 #[diesel(belongs_to(User))]
 #[diesel(table_name = users_roles)]

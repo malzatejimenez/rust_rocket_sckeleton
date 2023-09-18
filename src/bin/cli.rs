@@ -38,7 +38,11 @@ fn main() {
                 .subcommand(
                     Command::new("delete")
                         .about("Delete user by ID") // Descripción del subcomando.
-                        .arg(Arg::new("id").required(true)), // ID del usuario a eliminar.
+                        .arg(
+                            Arg::new("id")
+                                .required(true)
+                                .value_parser(clap::value_parser!(i32)),
+                        ), // ID del usuario a eliminar.
                 ),
         )
         .get_matches(); // Obtener los argumentos proporcionados en la línea de comandos.
@@ -62,7 +66,7 @@ fn main() {
                     .collect(),
             ), // Llamar a la función "create_user()" si se ejecuta el subcomando "create".
             Some(("list", _)) => list_users(), // Llamar a la función "list_users()" si se ejecuta el subcomando "list".
-            Some(("delete", _)) => {
+            Some(("delete", sub_matches)) => {
                 delete_user(sub_matches.get_one::<i32>("id").unwrap().to_owned())
             } // Llamar a la función "delete_user()" si se ejecuta el subcomando "delete".
             _ => {}                            // Manejar otros casos.
