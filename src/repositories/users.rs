@@ -7,7 +7,7 @@ use crate::{
     repositories::roles::RoleRepository,
     schema::{
         roles::table as roles_table,
-        users::table as users_table,
+        users::{self, table as users_table},
         users_roles::{self, table as users_roles_table},
     },
 };
@@ -16,6 +16,10 @@ use diesel::{prelude::*, PgConnection, QueryResult};
 pub struct UserRepository;
 
 impl UserRepository {
+    pub fn find_by_username(c: &mut PgConnection, username: &str) -> QueryResult<User> {
+        users_table.filter(users::username.eq(username)).first(c)
+    }
+
     // Consulta los usuarios de la  base de datos incluyendo sus roles.
     pub fn find_with_roles(
         c: &mut PgConnection,

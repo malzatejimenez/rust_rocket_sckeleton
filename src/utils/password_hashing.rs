@@ -21,16 +21,20 @@ pub fn hash_password(password: &str) -> Result<String, String> {
 }
 
 // Función para verificar una contraseña con su hash
-pub fn _verify_password(password: &str, hashed_password: &str) -> bool {
+pub fn _verify_password(
+    password: &str,
+    hashed_password: &str,
+) -> Result<(), argon2::password_hash::Error> {
+    // Convierte la contraseña en bytes
     let password_bytes = password.as_bytes();
 
     // Convierte el hash de contraseña en un tipo PasswordHash
-    let hash = argon2::PasswordHash::new(hashed_password).expect("Error al crear PasswordHash");
+    let hash = argon2::PasswordHash::new(hashed_password)?;
 
     // Utiliza la función de verificación
-    argon2::Argon2::default()
-        .verify_password(password_bytes, &hash)
-        .is_ok()
+    argon2::Argon2::default().verify_password(password_bytes, &hash)?;
+
+    Ok(())
 }
 
 // Importamos las bibliotecas necesarias para las pruebas
@@ -75,7 +79,7 @@ mod tests {
         // Verifica que la contraseña coincida con su hash
         let result = _verify_password(password, &password_hash.to_string());
 
-        // Debe ser true, ya que la contraseña y el hash coinciden
-        assert!(result);
+        // Debe ser Ok(()), ya que la contraseña y el hash coinciden
+        assert!(result.is_ok());
     }
 }

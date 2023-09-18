@@ -58,9 +58,17 @@ update-rustacean:
 delete-rustacean:
 	curl 127.0.0.1:8000/rustaceans/1 -X DELETE -H 'Content-Type: application/json'
 
-# probar la ruta para crear un nuevo crate
-create-crate:
-	curl 127.0.0.1:8000/crates -d '{"name":"John Doe", "email":"john@doe.com"}' -H 'Content-Type: application/json'
+# probar la ruta para inicio de sesión
+login:
+	curl 127.0.0.1:8000/login -d '{"username":"admin", "password":"1234"}' -H 'Content-Type: application/json'
+
+# probar la ruta para inicio de sesión erroneo
+loginerr:
+	curl 127.0.0.1:8000/login -d '{"username":"admin", "password":"12345"}' -H 'Content-Type: application/json'
+
+# probar la ruta para inicio de sesión erroneo
+loginusererr:
+	curl 127.0.0.1:8000/login -d '{"username":"adminn", "password":"1234"}' -H 'Content-Type: application/json'
 
 
 
