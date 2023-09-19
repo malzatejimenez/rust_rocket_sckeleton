@@ -16,6 +16,12 @@ use diesel::{prelude::*, PgConnection, QueryResult};
 pub struct UserRepository;
 
 impl UserRepository {
+    // Consulta un usuario por su identificador.
+    pub fn find(c: &mut PgConnection, id: i32) -> QueryResult<User> {
+        users_table.find(id).first(c)
+    }
+
+    // Consulta un usuario por su username.
     pub fn find_by_username(c: &mut PgConnection, username: &str) -> QueryResult<User> {
         users_table.filter(users::username.eq(username)).first(c)
     }

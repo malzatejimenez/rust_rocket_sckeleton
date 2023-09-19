@@ -1,16 +1,17 @@
-use reqwest::{blocking::Client, StatusCode};
+use reqwest::StatusCode;
 use serde_json::{json, Value};
 
 pub mod common;
 use common::{
-    create_test_crate, create_test_rustacean, delete_test_crate, delete_test_rustacean, APP_HOST,
+    create_test_crate, create_test_rustacean, delete_test_crate, delete_test_rustacean,
+    get_client_with_logged_in_admin, APP_HOST,
 };
 
 #[test]
 fn test_get_crates() {
     // SETUP ------------------------------
     // Creamos un cliente HTTP para realizar peticiones al servidor.
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
 
     // Creamos un Rustacean de prueba utilizando una función auxiliar.
     let rustacean = create_test_rustacean(&client);
@@ -47,7 +48,7 @@ fn test_get_crates() {
 fn test_create_crate() {
     // SETUP ------------------------------
     // Creamos un cliente HTTP para realizar peticiones al servidor.
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
 
     // Creamos un Rustacean de prueba utilizando una función auxiliar.
     let rustacean = create_test_rustacean(&client);
@@ -92,7 +93,7 @@ fn test_view_crate() {
     // SETUP ------------------------------
 
     // Creamos un cliente HTTP para realizar peticiones al servidor.
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
 
     // Creamos un Rustacean de prueba utilizando una función auxiliar.
     let rustacean = create_test_rustacean(&client);
@@ -126,7 +127,7 @@ fn test_update_crate() {
     // SETUP ------------------------------
 
     // Creamos un cliente HTTP para realizar peticiones al servidor.
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
 
     // Creamos un Rustacean de prueba utilizando una función auxiliar.
     let rustacean = create_test_rustacean(&client);
@@ -244,7 +245,7 @@ fn test_delete_crate() {
     // SETUP ------------------------------
 
     // Creamos un cliente HTTP para realizar peticiones al servidor.
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
 
     // Creamos un Rustacean de prueba utilizando una función auxiliar.
     let rustacean = create_test_rustacean(&client);

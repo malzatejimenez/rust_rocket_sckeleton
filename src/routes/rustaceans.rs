@@ -1,6 +1,10 @@
 use super::{server_error, DbConn};
 use crate::{
-    models::rustaceans::{NewRustacean, Rustacean}, // Importa los modelos Rustacean y NewRustacean desde tu proyecto
+    models::{
+        rustaceans::{NewRustacean, Rustacean},
+        users::User,
+    }, // Importa los modelos Rustacean y NewRustacean desde tu proyecto
+
     repositories::rustaceans::RustaceanRepository, // Importa el repositorio RustaceanRepository
 };
 use rocket::{
@@ -12,7 +16,7 @@ use rocket::{
 
 // Ruta para obtener todos los Rustaceans
 #[rocket::get("/rustaceans")]
-async fn get_rustaceans(db: DbConn) -> Result<Value, Custom<Value>> {
+async fn get_rustaceans(db: DbConn, _user: User) -> Result<Value, Custom<Value>> {
     // Utiliza la conexión de base de datos 'db' para buscar múltiples Rustaceans (hasta 100)
     db.run(|c| {
         RustaceanRepository::find_multiple(c, 100) // Llama a la función find_multiple del repositorio
@@ -24,7 +28,7 @@ async fn get_rustaceans(db: DbConn) -> Result<Value, Custom<Value>> {
 
 // Ruta para ver un Rustacean por su ID
 #[rocket::get("/rustaceans/<id>")]
-async fn view_rustacean(id: i32, db: DbConn) -> Result<Value, Custom<Value>> {
+async fn view_rustacean(id: i32, db: DbConn, _user: User) -> Result<Value, Custom<Value>> {
     // Utiliza la conexión de base de datos 'db' para buscar un Rustacean por su ID
     db.run(move |c| {
         RustaceanRepository::find(c, id) // Llama a la función find del repositorio
@@ -39,6 +43,7 @@ async fn view_rustacean(id: i32, db: DbConn) -> Result<Value, Custom<Value>> {
 async fn create_rustacean(
     new_rustacean: Json<NewRustacean>,
     db: DbConn,
+    _user: User,
 ) -> Result<Custom<Value>, Custom<Value>> {
     // Utiliza la conexión de base de datos 'db' para crear un nuevo Rustacean
     db.run(move |c| {
@@ -57,6 +62,7 @@ async fn update_rustacean(
     id: i32,
     rustacean: Json<Rustacean>,
     db: DbConn,
+    _user: User,
 ) -> Result<Custom<Value>, Custom<Value>> {
     // Utiliza la conexión de base de datos 'db' para actualizar un Rustacean por su ID
     db.run(move |c| {
@@ -71,7 +77,7 @@ async fn update_rustacean(
 
 // Ruta para eliminar un Rustacean por su ID
 #[rocket::delete("/rustaceans/<id>")]
-async fn delete_rustacean(id: i32, db: DbConn) -> Result<NoContent, Custom<Value>> {
+async fn delete_rustacean(id: i32, db: DbConn, _user: User) -> Result<NoContent, Custom<Value>> {
     // Utiliza la conexión de base de datos 'db' para eliminar un Rustacean por su ID
     db.run(move |c| {
         RustaceanRepository::delete(c, id) // Llama a la función delete del repositorio

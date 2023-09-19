@@ -1,16 +1,18 @@
-use reqwest::{blocking::Client, StatusCode}; // Importa las bibliotecas necesarias
+use reqwest::StatusCode; // Importa las bibliotecas necesarias
 use serde_json::{json, Value}; // Importa las bibliotecas necesarias de Rocket
 
 pub mod common;
 
-use common::{create_test_rustacean, delete_test_rustacean, APP_HOST};
+use common::{
+    create_test_rustacean, delete_test_rustacean, get_client_with_logged_in_admin, APP_HOST,
+};
 
 #[test]
 fn test_get_rustaceans() {
     // SETUP ----------------------------
 
     // Definir un cliente HTTP para realizar la prueba
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
 
     let rustacean1 = create_test_rustacean(&client); // Crea un Rustacean
     let rustacean2 = create_test_rustacean(&client); // Crea un Rustacean
@@ -41,7 +43,7 @@ fn test_create_rustacean() {
     // SETUP-----------------------------
 
     // Crea un cliente HTTP para realizar la prueba
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
 
     // Crea un objeto JSON que representa un Rustacean con nombre y correo electrónico
     let mut rustacean = json!({
@@ -80,7 +82,7 @@ fn test_view_rustacean() {
     // SETUP -------------------------------
 
     // definiendo el cliente
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
 
     // creando un rustacean
     let rustacean_created: Value = create_test_rustacean(&client);
@@ -114,7 +116,7 @@ fn test_update_rustacean() {
     // SETUP -------------------------------
 
     // Definir un cliente HTTP para realizar la prueba
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
 
     // Crear un Rustacean inicial utilizando la función create_test_rustacean
     let rustacean_created: Value = create_test_rustacean(&client);
@@ -158,7 +160,7 @@ fn test_delete_rustacean() {
     // SETUP -------------------------------
 
     // Definir un cliente HTTP para realizar la prueba
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
 
     // Crear un Rustacean utilizando la función create_test_rustacean para luego eliminarlo
     let rustacean_created: Value = create_test_rustacean(&client);

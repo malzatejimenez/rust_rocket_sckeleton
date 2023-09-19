@@ -1,4 +1,10 @@
-use reqwest::{blocking::Client, StatusCode};
+use std::process::Command;
+
+use reqwest::{
+    blocking::{Client, ClientBuilder},
+    header::{self, HeaderMap, HeaderValue},
+    StatusCode,
+};
 use rocket::serde::json::{json, Value};
 
 pub static APP_HOST: &'static str = "http://127.0.0.1:8000";
@@ -80,4 +86,59 @@ pub fn create_test_crate(client: &Client, rustacean: &Value) -> Value {
 
     // Deserializa la respuesta JSON y la devuelve como un objeto Value
     response.json().unwrap()
+}
+
+pub fn get_client_with_logged_in_admin() -> Client {
+    // Ejecuta el comando "cargo run --bin cli users create test_admin 1234 admin"
+    let _ = Command::new("cargo")
+        .arg("run")
+        .arg("--bin")
+        .arg("cli")
+        .arg("users")
+        .arg("create")
+        .arg("test_admin")
+        .arg("1234")
+        .arg("admin")
+        .output()
+        .unwrap();
+
+    // Se crea un cliente HTTP
+    let client = Client::new();
+
+    // Se obtiene el token del usuario administrador
+    let response = client
+        .post(format!("{}/login", APP_HOST))
+        .json(&json!({
+            "username": "test_admin",
+            "password": "1234"
+        }))
+        .send()
+        .unwrap();
+
+    // Se valida que el estatus de la respuesta sea OK
+    assert_eq!(response.status(), StatusCode::OK);
+
+    // Se obtiene el cuerpo de la respuesta
+    let json: Value = response.json().unwrap();
+
+    // Se valida que el cuerpo de la respuesta tenga un token
+    assert!(json.get("token").is_some());
+
+    // Se declara un header al cual se le agregará el token
+    let mut headers = HeaderMap::new();
+
+    // Se obtiene el token de la respuesta
+    let token = json["token"].as_str().unwrap();
+
+    // Se declara un header value al cual contendrá el token
+    let header_token = HeaderValue::from_str(format!("Bearer {}", token).as_str()).unwrap();
+
+    // Se agrega header value al header map
+    headers.insert(header::AUTHORIZATION, header_token);
+
+    // Se crea un cliente HTTP con el header agregado
+    ClientBuilder::new()
+        .default_headers(headers)
+        .build()
+        .unwrap()
 }
