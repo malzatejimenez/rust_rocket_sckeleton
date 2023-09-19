@@ -24,21 +24,11 @@ impl UserRepository {
     pub fn find_with_roles(
         c: &mut PgConnection,
     ) -> QueryResult<Vec<(User, Vec<(UserRole, Role)>)>> {
-        // Carga todos los registros de la tabla de usuarios (users_table).
         let users = users_table.load(c)?;
-
-        // Realiza una consulta que combina las tablas 'users_roles_table' y 'roles_table'
-        // mediante una operación de 'inner join'.
-        // Esto podría ser útil si tienes una tabla de relaciones entre usuarios y roles.
         let result = users_roles_table
             .inner_join(roles_table)
             .load::<(UserRole, Role)>(c)?
             .grouped_by(&users);
-
-        // Combina los resultados cargados de la tabla de usuarios con los resultados
-        // de la consulta de roles, agrupándolos en una estructura de datos que contiene
-        // un vector de usuarios y para cada usuario, un vector de tuplas (UserRole, Role)
-        // que representa las relaciones de roles para ese usuario.
         Ok(users.into_iter().zip(result).collect())
     }
 

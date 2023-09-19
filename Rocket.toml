@@ -4,3 +4,4 @@ secret_key = "c9/q00FKDxCe/Q5z2nG4OU+8AoZ1j1TA0HsouYzdldY="
 
 [default.databases]
 postgres = { url = "postgres://postgres:postgres@localhost/app_db" }
+redis = {url="redis://localhost:6379"}

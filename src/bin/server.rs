@@ -2,8 +2,9 @@ extern crate cr8s;
 
 use cr8s::{
     routes::{authorization, crates, rustaceans},
-    DbConn,
+    CacheConn, DbConn,
 };
+use rocket_db_pools::Database;
 
 #[rocket::main]
 async fn main() {
@@ -12,6 +13,7 @@ async fn main() {
         .mount("/", rustaceans::routes())
         .mount("/", crates::routes())
         .attach(DbConn::fairing())
+        .attach(CacheConn::init())
         .launch()
         .await;
 }
