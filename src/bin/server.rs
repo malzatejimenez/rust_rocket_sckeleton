@@ -1,9 +1,6 @@
 extern crate cr8s;
 
-use cr8s::{
-    routes::{authorization, crates, rustaceans},
-    CacheConn, DbConn,
-};
+use cr8s::routes::{authorization, crates, rustaceans, CacheConn, DbConn};
 use rocket_db_pools::Database;
 
 #[rocket::main]

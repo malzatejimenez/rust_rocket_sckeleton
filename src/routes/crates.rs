@@ -1,7 +1,7 @@
+use super::DbConn;
 use crate::{
     models::crates::{Crate, NewCrate}, // Importa los modelos Crate y NewCrate desde tu proyecto
     repositories::crates::CrateRepository, // Importa el repositorio CrateRepository
-    DbConn, // Importa la estructura DbConn que representa la conexión de base de datos
 };
 use rocket::{
     http::Status,

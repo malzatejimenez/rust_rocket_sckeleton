@@ -1,8 +1,7 @@
-use super::server_error;
+use super::{server_error, CacheConn, DbConn};
 use crate::{
     auth::{authorize::authorize_user, Credentials},
     repositories::users::UserRepository,
-    CacheConn, DbConn,
 };
 use rocket::{
     http::Status,

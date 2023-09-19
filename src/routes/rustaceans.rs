@@ -1,8 +1,7 @@
-use super::server_error;
+use super::{server_error, DbConn};
 use crate::{
     models::rustaceans::{NewRustacean, Rustacean}, // Importa los modelos Rustacean y NewRustacean desde tu proyecto
     repositories::rustaceans::RustaceanRepository, // Importa el repositorio RustaceanRepository
-    DbConn, // Importa la estructura DbConn que representa la conexión de base de datos
 };
 use rocket::{
     http::Status,
