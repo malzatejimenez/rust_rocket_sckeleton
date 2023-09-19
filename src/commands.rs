@@ -1,9 +1,10 @@
 use crate::{
     auth::authorize::hash_password,
-    models::users::NewUser,
+    models::{roles::RoleCode, users::NewUser},
     repositories::{roles::RoleRepository, users::UserRepository},
 };
 use diesel::{pg::PgConnection, prelude::*};
+use std::str::FromStr;
 
 // Función para cargar la conexión a la base de datos desde la variable de entorno
 fn load_db_connection() -> PgConnection {
@@ -27,6 +28,12 @@ pub fn create_user(username: String, password: String, roles: Vec<String>) -> ()
         username,
         password: password_hash,
     };
+
+    // Convierte los roles de String a RoleCode
+    let roles = roles
+        .iter()
+        .map(|v| RoleCode::from_str(&v).unwrap())
+        .collect();
 
     // Crea el usuario en la base de datos y obtiene el resultado
     let user = UserRepository::create(&mut c, new_user, roles).unwrap();

@@ -1,9 +1,6 @@
-use super::{server_error, DbConn};
+use super::{server_error, DbConn, EditorUser};
 use crate::{
-    models::{
-        crates::{Crate, NewCrate}, // Importa los modelos Crate y NewCrate desde tu proyecto
-        users::User,               // Importa el modelo User desde tu proyecto
-    },
+    models::crates::{Crate, NewCrate},
     repositories::crates::CrateRepository, // Importa el repositorio CrateRepository
 };
 use rocket::{
@@ -15,7 +12,7 @@ use rocket::{
 
 // Ruta para obtener todos los Crates
 #[rocket::get("/crates")]
-async fn get_crates(db: DbConn, _user: User) -> Result<Value, Custom<Value>> {
+async fn get_crates(db: DbConn, _user: EditorUser) -> Result<Value, Custom<Value>> {
     // Utiliza la conexión de base de datos 'db' para buscar múltiples Crates (hasta 100)
     db.run(|c| {
         CrateRepository::find_multiple(c, 100) // Llama a la función find_multiple del repositorio
@@ -27,7 +24,7 @@ async fn get_crates(db: DbConn, _user: User) -> Result<Value, Custom<Value>> {
 
 // Ruta para ver un Crate por su ID
 #[rocket::get("/crates/<id>")]
-async fn view_crate(id: i32, db: DbConn, _user: User) -> Result<Value, Custom<Value>> {
+async fn view_crate(id: i32, db: DbConn, _user: EditorUser) -> Result<Value, Custom<Value>> {
     // Utiliza la conexión de base de datos 'db' para buscar un Crate por su ID
     db.run(move |c| {
         CrateRepository::find(c, id) // Llama a la función find del repositorio
@@ -42,7 +39,7 @@ async fn view_crate(id: i32, db: DbConn, _user: User) -> Result<Value, Custom<Va
 async fn create_crate(
     new_crate: Json<NewCrate>,
     db: DbConn,
-    _user: User,
+    _user: EditorUser,
 ) -> Result<Custom<Value>, Custom<Value>> {
     // Utiliza la conexión de base de datos 'db' para crear un nuevo Crate
     db.run(move |c| {
@@ -61,7 +58,7 @@ async fn update_crate(
     id: i32,
     a_crate: Json<Crate>,
     db: DbConn,
-    _user: User,
+    _user: EditorUser,
 ) -> Result<Custom<Value>, Custom<Value>> {
     // Utiliza la conexión de base de datos 'db' para actualizar un Crate por su ID
     db.run(move |c| {
@@ -76,7 +73,7 @@ async fn update_crate(
 
 // Ruta para eliminar un Crate por su ID
 #[rocket::delete("/crates/<id>")]
-async fn delete_crate(id: i32, db: DbConn, _user: User) -> Result<NoContent, Custom<Value>> {
+async fn delete_crate(id: i32, db: DbConn, _user: EditorUser) -> Result<NoContent, Custom<Value>> {
     // Utiliza la conexión de base de datos 'db' para eliminar un Crate por su ID
     db.run(move |c| {
         CrateRepository::delete(c, id) // Llama a la función delete del repositorio

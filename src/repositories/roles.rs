@@ -1,6 +1,6 @@
 use crate::{
     models::{
-        roles::{NewRole, Role},
+        roles::{NewRole, Role, RoleCode},
         users::User,
         users_roles::UserRole,
     },
@@ -12,7 +12,7 @@ pub struct RoleRepository;
 
 impl RoleRepository {
     // Encuentra un rol por su código
-    pub fn find_by_code(c: &mut PgConnection, code: &str) -> QueryResult<Role> {
+    pub fn find_by_code(c: &mut PgConnection, code: &RoleCode) -> QueryResult<Role> {
         roles_table.filter(roles::code.eq(code)).first(c)
     }
 

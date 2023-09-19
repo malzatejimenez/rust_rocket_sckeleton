@@ -1,6 +1,6 @@
 use crate::{
     models::{
-        roles::{NewRole, Role},
+        roles::{NewRole, Role, RoleCode},
         users::{NewUser, User},
         users_roles::{NewUserRole, UserRole},
     },
@@ -41,7 +41,7 @@ impl UserRepository {
     pub fn create(
         c: &mut PgConnection,
         new_user: NewUser,
-        role_codes: Vec<String>,
+        role_codes: Vec<RoleCode>,
     ) -> QueryResult<User> {
         // Insertar un nuevo usuario en la tabla de usuarios.
         let user = diesel::insert_into(users_table)
@@ -55,10 +55,11 @@ impl UserRepository {
                 if let Ok(role) = RoleRepository::find_by_code(c, &role_code) {
                     role
                 } else {
+                    let name = role_code.to_string();
                     // Si el rol no existe, crear un nuevo rol.
                     let new_role = NewRole {
-                        name: role_code.clone(),
-                        code: role_code.clone(),
+                        name,
+                        code: role_code,
                     };
                     RoleRepository::create(c, new_role)?
                 }

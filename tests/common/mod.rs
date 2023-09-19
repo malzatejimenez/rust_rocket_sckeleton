@@ -88,7 +88,10 @@ pub fn create_test_crate(client: &Client, rustacean: &Value) -> Value {
     response.json().unwrap()
 }
 
-pub fn get_client_with_logged_in_admin() -> Client {
+fn get_logged_in_client(username: &str, role: &str) -> Client {
+    // Se declara un string con el password del usuario
+    let password = "1234";
+
     // Ejecuta el comando "cargo run --bin cli users create test_admin 1234 admin"
     let _ = Command::new("cargo")
         .arg("run")
@@ -96,11 +99,13 @@ pub fn get_client_with_logged_in_admin() -> Client {
         .arg("cli")
         .arg("users")
         .arg("create")
-        .arg("test_admin")
-        .arg("1234")
-        .arg("admin")
+        .arg(username)
+        .arg(password)
+        .arg(role)
         .output()
         .unwrap();
+
+    // println!("{:?}", output);
 
     // Se crea un cliente HTTP
     let client = Client::new();
@@ -109,8 +114,8 @@ pub fn get_client_with_logged_in_admin() -> Client {
     let response = client
         .post(format!("{}/login", APP_HOST))
         .json(&json!({
-            "username": "test_admin",
-            "password": "1234"
+            "username": username,
+            "password": password,
         }))
         .send()
         .unwrap();
@@ -141,4 +146,14 @@ pub fn get_client_with_logged_in_admin() -> Client {
         .default_headers(headers)
         .build()
         .unwrap()
+}
+
+// Función para crear un cliente HTTP con un usuario administrador autenticado
+pub fn get_client_with_logged_in_admin() -> Client {
+    get_logged_in_client("test_admin", "admin")
+}
+
+// Función para crear un cliente HTTP con un usuario viewer autenticado
+pub fn get_client_with_logged_in_viewer() -> Client {
+    get_logged_in_client("test_viewer", "viewer")
 }
